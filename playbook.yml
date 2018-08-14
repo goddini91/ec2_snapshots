@@ -1,8 +1,7 @@
 - name: test
   hosts: localhost
-  vars_files:
-  - variables.yml
-
+ # vars_files:
+ # - variables.yml
   tasks:
 
     - name: Gather EC2 facts.
