@@ -1,0 +1,11 @@
+---
+region: 'us-east-1'
+aws_access_key: ''
+aws_secret_key: ''
+instance_tag: 'tag:backup' ##need for filter what instans need backup
+instance_tag_key: 'yes'
+snapshoot_tag: identifier
+snapshoot_tag_key: awsbackup
+day: 1 # save backup
+date_tag: "{{ lookup('pipe', 'date  +\"%j\"') }}"
+del_date: "{{ lookup('pipe', 'date -d \"{{ day }} day ago\" +\"%j\"') }}"

@@ -5,8 +5,8 @@
   - variables.yml
 
   tasks:
-#    - pip:
-#        name: boto3
+    - pip:
+        name: boto3
     - name: Gather EC2 facts.
       ec2_instance_facts:
         aws_secret_key: "{{ aws_secret_key }}"
@@ -32,17 +32,17 @@
         description: "awsbackup snapshot taken on {{ ansible_date_time.date }} at {{ ansible_date_time.time }}"
         snapshot_tags:
             "identifier": "{{ snapshoot_tag_key }}"
-            date: "{{ date_tag | int}}"
+            date: "{{ date_tag }}"
       with_items: "{{ ec2_facts.instances }}"
       register: snap
   
 ########
 #delete#
 ########  
-    - name: Print the snapshot ids
-      debug:
-        msg: "{{ item.snapshot_id }}"
-      with_items: "{{ snap.results }}"
+#    - name: Print the snapshot ids
+#      debug:
+#        msg: "{{ item.snapshot_id }}"
+#      with_items: "{{ snap.results }}"
   
     
     - name: Find snapshots.
@@ -62,7 +62,7 @@
 ##snapshoot_tag tag to variable "backup" need write on playbook can't render into a variable
     - name: Get ordered list of snapshots for stack.
       set_fact:
-        snaps_fact_list:  "{{ ec2_snapshot_facts.snapshots|selectattr('tags.identifier', 'equalto', '{{ snapshoot_tag_key }}')|selectattr('tags.date', 'ge', '{{ del_date }}')|sort(attribute='start_time')|reverse|map(attribute='snapshot_id')|list }}"
+        snaps_fact_list:  "{{ ec2_snapshot_facts.snapshots|selectattr('tags.date', 'ge', '{{ del_date }}')|reverse|map(attribute='snapshot_id')|list }}"
 #        snaps_fact_list:  "{{ ec2_snapshot_facts.snapshots|selectattr('tags.identifier', 'equalto', '{{ snapshoot_tag_key }}')|selectattr('tags.date', 'ge', '{{ del_date }}')|sort(attribute='start_time')|reverse|map(attribute='snapshot_id')|list }}"
       with_items: "{{ ec2_facts.instances }}"
       register: snaps_fact_list_register 
@@ -70,7 +70,7 @@
 
     - name: Cut the list by our COUNT variable.
       set_fact:
-        snaps_cut: "{{ item.ansible_facts['snaps_fact_list'][0:] }}"
+        snaps_cut: "{{ item.ansible_facts['snaps_fact_list'][:] }}"
       with_items: "{{ snaps_fact_list_register.results }}"
       register: snaps_cut_register
 
