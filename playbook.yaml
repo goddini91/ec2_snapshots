@@ -1,6 +1,5 @@
 - name: test
   hosts: localhost
-  gather_facts: True
   vars_files:
   - variables.yml
 
@@ -39,12 +38,13 @@
 ########
 #delete#
 ########  
-#    - name: Print the snapshot ids
-#      debug:
-#        msg: "{{ item.snapshot_id }}"
-#      with_items: "{{ snap.results }}"
+    - name: Print the snapshot ids
+      debug:
+        msg: "{{ item.snapshot_id }}"
+      with_items: "{{ snap.results }}"
   
-    
+ ###
+ #   
     - name: Find snapshots.
       ec2_snapshot_facts:
         aws_secret_key: "{{ aws_secret_key }}"
@@ -62,8 +62,8 @@
 ##snapshoot_tag tag to variable "backup" need write on playbook can't render into a variable
     - name: Get ordered list of snapshots for stack.
       set_fact:
-        snaps_fact_list:  "{{ ec2_snapshot_facts.snapshots|selectattr('tags.date', 'ge', '{{ del_date }}')|reverse|map(attribute='snapshot_id')|list }}"
-#        snaps_fact_list:  "{{ ec2_snapshot_facts.snapshots|selectattr('tags.identifier', 'equalto', '{{ snapshoot_tag_key }}')|selectattr('tags.date', 'ge', '{{ del_date }}')|sort(attribute='start_time')|reverse|map(attribute='snapshot_id')|list }}"
+        snaps_fact_list:  "{{ ec2_snapshot_facts.snapshots|selectattr('tags.date', 'lt', '{{ del_date }}')|sort(attribute='start_time')|reverse|map(attribute='snapshot_id')|list }}"
+#        snaps_fact_list:  "{{ ec2_snapshot_facts.snapshots|selectattr('tags.identifier', 'equalto', '{{ snapshoot_tag_key }}')|selectattr('tags.date', 'le', '{{ date_tag }}')|sort(attribute='start_time')|reverse|map(attribute='snapshot_id')|list }}"
       with_items: "{{ ec2_facts.instances }}"
       register: snaps_fact_list_register 
 

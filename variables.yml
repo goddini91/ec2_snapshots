@@ -4,7 +4,7 @@ aws_access_key: ''
 aws_secret_key: ''
 instance_tag_key: 'yes'
 snapshoot_tag_key: awsbackup
-day: 1 # save backup
+day: 4 # save backup
 date_tag: "{{ lookup('pipe', 'date  +\"%j\"') }}"
 del_date: "{{ lookup('pipe', 'date -d \"{{ day }} day ago\" +\"%j\"') }}"
 
